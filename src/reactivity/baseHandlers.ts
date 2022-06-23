@@ -4,13 +4,13 @@ const get = createGetter()
 const set = createSetter()
 const readonlyGet = createGetter(true)
 const readonlySet = createSetter(true)
-export const reaonlyHandlers = {
+export const mutableHandlers = {
   get,
   set
 }
-export const mutableHandlers = {
-  readonlyGet,
-  readonlySet
+export const readonlyHandlers = {
+  get: readonlyGet,
+  set: readonlySet
 }
 export function createGetter(isReadonly: boolean = false) {
   return function get(target, key) {
