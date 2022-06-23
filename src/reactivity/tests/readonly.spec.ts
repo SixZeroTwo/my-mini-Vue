@@ -1,4 +1,4 @@
-import { readonly } from "../reactive";
+import { isReadonly, readonly } from "../reactive";
 
 describe('readonly', () => {
   it('happy path', () => {
@@ -12,9 +12,11 @@ describe('readonly', () => {
   });
 });
 
-/* describe('isReadonly', () => {
+describe('isReadonly', () => {
   it('happy path', () => {
     const foo = readonly({ bar: 1 })
+    const dummy = {}
     expect(isReadonly(foo)).toBe(true)
+    expect(isReadonly(dummy)).toBe(false)
   });
-}) */
+}) 
