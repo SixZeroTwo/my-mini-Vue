@@ -66,5 +66,7 @@ describe('effect', () => {
     expect(onStop).toBeCalledTimes(1)//onStop被调用
     runner()
     expect(dummy).toBe(2)//dummy恢复响应性
+    foo.bar = 10
+    expect(dummy).toBe(10)
   });
 })

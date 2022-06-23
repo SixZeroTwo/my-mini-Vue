@@ -1,19 +1,21 @@
-import { track, trigger } from "./effect"
+import { mutableHandlers, reaonlyHandlers } from "./baseHandlers"
+
 export function reactive(obj) {
-  return new Proxy(obj, {
-    get(target, key) {
-      const res = Reflect.get(target, key)
-      //收集依赖
-      //track函数传入target和key，通过targetsMap找到target对应的依赖depsMap，再根据key设置对应的deps的fn
-      track(target, key)
-      return res
-    },
-    set(target, key, value) {
-      const res = Reflect.set(target, key, value)
-      //触发依赖
-      //同样是通过targetsMap和depsMap，依次触发deps中的回调函数
-      trigger(target, key, value)
-      return res
-    }
-  })
+  return createActiveObject(obj, mutableHandlers)
 }
+
+export function readonly(obj) {
+  return createActiveObject(obj, reaonlyHandlers)
+}
+
+function createActiveObject(obj: any, handlers) {
+  return new Proxy(obj, handlers)
+}
+/* export const enum ReactiveFlags {
+  IS_REACTIVE = '_v_isReactive',
+  IS_READONLY = '_v_isReadonly',
+}
+export function isReactive(target) {
+  return target[ReactiveFlags.IS_REACTIVE]
+} */
+

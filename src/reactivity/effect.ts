@@ -11,9 +11,8 @@ class ReactiveEffect {
   }
   run() {
     activeEffect = this
-    this.fn()
     this.active = true
-    return this.fn
+    return this.fn()
   }
   stop() {
     if (this.active) {
@@ -28,6 +27,7 @@ function cleanEffect(effect) {
 
   //找到deps并一一删除
   effect.deps.forEach(dep => dep.delete(effect))
+
   //清空活动对象
   activeEffect = null
 }
@@ -36,7 +36,8 @@ export function effect(fn: Function, options?: any) {
   let _effect = new ReactiveEffect(fn)
   //将options的属性赋予_effect
   extend(_effect, options)
-  const runner = _effect.run().bind(_effect)
+  _effect.run()
+  const runner: any = _effect.run.bind(_effect)
   runner._effect = _effect
   return runner
 }
