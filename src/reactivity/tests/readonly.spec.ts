@@ -1,4 +1,4 @@
-import { isReadonly, readonly } from "../reactive";
+import { isReadonly, readonly, shallowReadonly } from "../reactive";
 
 describe('readonly', () => {
   it('happy path', () => {
@@ -10,6 +10,19 @@ describe('readonly', () => {
     dummy.foo = 2
     expect(console.warn).toBeCalledTimes(1)
   });
+  test('nested readonly', () => {
+    const original = {
+      nested: {
+        foo: 1
+      },
+      arr: [{ bar: 1 }]
+    }
+    const observed = readonly(original)
+    expect(isReadonly(observed.nested)).toBe(true)
+    expect(isReadonly(observed.arr[0])).toBe(true)
+    observed.nested.foo = 2
+    expect(observed.nested.foo).not.toBe(2)
+  })
 });
 
 describe('isReadonly', () => {
@@ -19,4 +32,20 @@ describe('isReadonly', () => {
     expect(isReadonly(foo)).toBe(true)
     expect(isReadonly(dummy)).toBe(false)
   });
-}) 
+})
+
+describe('shallowReadonly', () => {
+  test('nested readonly', () => {
+    const original = {
+      nested: {
+        foo: 1
+      },
+      arr: [{ bar: 1 }]
+    }
+    const observed = shallowReadonly(original)
+    expect(isReadonly(observed.nested)).toBe(false)
+    expect(isReadonly(observed.arr[0])).toBe(false)
+    observed.nested.foo = 2
+    expect(observed.nested.foo).toBe(2)
+  })
+});
