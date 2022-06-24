@@ -50,6 +50,9 @@ export function track(target, key) {
   let depsMap = targetsMap.get(target)
   if (!depsMap.has(key)) depsMap.set(key, new Set)
   let dep = depsMap.get(key)
+  trackEffect(dep)
+}
+export function trackEffect(dep) {
   //当前如果没有活动对象
   if (!activeEffect) return
   //将现在的effect对象放入deps
@@ -64,13 +67,15 @@ export function trigger(target, key, value) {
   let depsMap = targetsMap.get(target)
   if (!depsMap.has(key)) depsMap.set(key, new Set)
   let dep = depsMap.get(key)
+  triggerEffect(dep)
+}
+export function triggerEffect(dep) {
   //通知依赖
   for (let effect of dep) {
     if (effect.scheduler) effect.scheduler()
     else effect.run()
   }
 }
-
 export function stop(runner) {
   runner._effect.stop()
 }
