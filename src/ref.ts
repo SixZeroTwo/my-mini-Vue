@@ -7,6 +7,7 @@ class RefImpl {
   private _value
   private dep: Set<any>
   private rawValue
+  readonly _v_isRef = true
   constructor(value) {
     createRefValue(this, value)
     this.rawValue = value
@@ -32,4 +33,10 @@ function createRefValue(ref, value) {
 }
 export function ref(value) {
   return new RefImpl(value)
+}
+export function isRef(obj) {
+  return Boolean(obj._v_isRef)
+}
+export function unRef(obj) {
+  return isRef(obj) ? obj.value : obj
 }
