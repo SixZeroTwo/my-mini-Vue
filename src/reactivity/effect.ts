@@ -1,6 +1,6 @@
 import { extend } from "./shared/extend"
 
-class ReactiveEffect {
+export class ReactiveEffect {
   private fn: Function
   public scheduler?
   public onStop?: Function
