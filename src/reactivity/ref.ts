@@ -1,7 +1,7 @@
-import { trackEffect, triggerEffect } from "./reactivity/effect"
-import { reactive } from "./reactivity/reactive"
-import { hasChanged } from "./reactivity/shared/hasChanged"
-import { isObject } from "./reactivity/shared/isObject"
+import { trackEffect, triggerEffect } from "./effect"
+import { reactive } from "./reactive"
+import { hasChanged } from "./shared/hasChanged"
+import { isObject } from "./shared/isObject"
 
 class RefImpl {
   private _value
@@ -39,4 +39,18 @@ export function isRef(obj) {
 }
 export function unRef(obj) {
   return isRef(obj) ? obj.value : obj
+}
+
+export function proxyRefs(objWithRefs) {
+  return new Proxy(objWithRefs, objWithRefsHandlers)
+}
+export const objWithRefsHandlers = {
+  get(target, key) {
+    return unRef(Reflect.get(target, key))
+  },
+  set(target, key, value) {
+    return isRef(target[key]) && !isRef(value)
+      ? target[key].value = value
+      : Reflect.set(target, key, value)
+  }
 }
