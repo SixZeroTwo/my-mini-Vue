@@ -1,5 +1,5 @@
 import { ReactiveEffect } from './effect'
-import { extend } from './shared/extend'
+import { extend } from '../shared/extend'
 class ComputedRefImpl {
   private _value
   private dirty = false
