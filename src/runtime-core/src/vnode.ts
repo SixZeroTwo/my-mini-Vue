@@ -1,5 +1,7 @@
-export function createVNode(rootComponent: any) {
+export function createVNode(type, props?, children?) {
   return {
-    type: rootComponent
+    type,
+    props,
+    children
   }
 }
