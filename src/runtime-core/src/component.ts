@@ -23,9 +23,9 @@ function setupStatefulComponent(instance: any) {
     const setupResult = setup()
     //处理结果，将结果挂载到instance上
     handleSetupResult(instance, setupResult)
-    //结束初始化阶段，将component上的render挂载到instance上    
-    finishSetupComponent(instance)
   }
+  //结束初始化阶段，将component上的render挂载到instance上    
+  finishSetupComponent(instance)
 }
 
 function handleSetupResult(instance: any, setupResult: any) {
