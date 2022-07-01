@@ -1,3 +1,4 @@
+import { publicInstanceProxyHandlers } from "./componentPublicInstanceProxyHandlers"
 import { patch } from "./renderer"
 
 export function createComponentInstance(vnode: any) {
@@ -7,16 +8,21 @@ export function createComponentInstance(vnode: any) {
   }
 }
 
-export function setupComponent(instance: any, container) {
+export function setupComponent(instance: any, container, vnode) {
   //Todo
   //初始化props、slots
 
   //初始化具有状态的的component（区别于无状态的函数式组件）
   setupStatefulComponent(instance)
+  //将proxy代理对象挂在到instance上
+  setupProxy(instance)
   //对子节点做挂载操作
-  setupRenderEffect(instance, container)
+  setupRenderEffect(instance, container, vnode)
 }
 
+function setupProxy(instance) {
+  instance.proxy = new Proxy({ _: instance }, publicInstanceProxyHandlers)
+}
 function setupStatefulComponent(instance: any) {
   const setup = instance.type.setup
   if (setup) {
@@ -40,8 +46,11 @@ function finishSetupComponent(instance: any) {
     instance.render = render
   }
 }
-function setupRenderEffect(instance: any, container) {
+function setupRenderEffect(instance: any, container, vnode) {
   //子vnode数组
-  const subTree = instance.render()
+  const subTree = instance.render.call(instance.proxy)
   patch(subTree, container)
+  instance.el = subTree.el
 }
+
+

@@ -28,7 +28,7 @@ function mountComponent(vnode, container) {
   //将数据收集之后放在实例上统一处理
   const instance = createComponentInstance(vnode)
   //初始化Component
-  setupComponent(instance, container)
+  setupComponent(instance, container, vnode)
 }
 
 function processElement(vnode: any, container: any) {
@@ -44,6 +44,8 @@ function mountElement(vnode: any, container: any) {
   const { type, props, children } = vnode
   //创建元素、配置元素、递归调用patch，添加到容器
   const el = document.createElement(type)
+  //挂到el上
+  vnode.el = el
   //props
   if (props) {
     for (let key in props) {

@@ -11,6 +11,7 @@ const Foo = {
     );
   },
 }
+
 export const App = {
   setup() {
     return {
@@ -18,6 +19,7 @@ export const App = {
     }
   },
   render() {
+    window.self = this
     // ui
     return h(
       "div",
@@ -25,15 +27,7 @@ export const App = {
         id: "root",
         class: "red",
       },
-      // "hi, " + this.msg
-      // string
-      // "hi, mini-vue"
-      // Array
-      ['hi',
-        h("p", { class: "green" }, "this is"),
-        h("p", { class: "yellow" }, "mini-vue"),
-        Foo
-      ]
+      `hello ${this.msg}`,
     );
   },
 }
