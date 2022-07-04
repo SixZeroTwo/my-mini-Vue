@@ -1,16 +1,5 @@
 import { h } from '../../lib/mini-vue.esm.js'
-const Foo = {
-  render() {
-    // ui
-    return h(
-      "div",
-      {
-        class: "blue",
-      },
-      '我是Foo'
-    );
-  },
-}
+import { Foo } from './Foo.js'
 
 export const App = {
   setup() {
@@ -26,9 +15,8 @@ export const App = {
       {
         id: "root",
         class: "red",
-        onClick: () => console.log('click')
       },
-      `hello ${this.msg}`,
+      h(Foo, { count: 1 })
     );
   },
 } 

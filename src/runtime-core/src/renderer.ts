@@ -1,6 +1,5 @@
 import { isArrayChildren, isElement, isStatefulComponent, isTextChild } from "../../shared/shapeFlags"
 import { createComponentInstance, setupComponent } from "./component"
-import { createVNode } from "./vnode"
 
 export function render(vnode: any, rootContainer: any) {
   patch(vnode, rootContainer)
@@ -58,8 +57,9 @@ function mountElement(vnode: any, container: any) {
   //children
   if (children) {
     if (isArrayChildren(vnode)) mountChildren(children, el)
+    else if (isTextChild(vnode)) el.textContent = children
     else {
-      mountChild(children, el)
+      patch(children, el)
     }
   }
   //将当前生成好的el添加到container上
@@ -69,25 +69,7 @@ function mountElement(vnode: any, container: any) {
 
 function mountChildren(children, el) {
   for (let child of children) {
-    mountChild(child, el)
-  }
-}
-
-function mountChild(child, el) {
-  //判断该子元素是string、是一个vnode还是一个组件对象
-  if (typeof child == "string") {
-    const textNode = document.createTextNode(child)
-    el.append(textNode)
-  }
-  else if (typeof child == 'object' && child.type) {
-    //传入vnode
     patch(child, el)
-  }
-  //组件对象
-  else if (typeof child == 'object' && !child.type) {
-    const vnode = createVNode(child)
-    //得到vnode再传入
-    patch(vnode, el)
   }
 }
 
