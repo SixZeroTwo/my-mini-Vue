@@ -46,7 +46,12 @@ function mountElement(vnode: any, container: any) {
   vnode.el = el
   //props
   if (props) {
+    const isOn = (key) => new RegExp('^on[A-Z]').test(key)
     for (let key in props) {
+      if (isOn(key)) {
+        const event = key.slice(2).toLowerCase()
+        el.addEventListener(event, props[key])
+      }
       el.setAttribute(key, props[key])
     }
   }

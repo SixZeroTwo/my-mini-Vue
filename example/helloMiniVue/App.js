@@ -12,25 +12,6 @@ const Foo = {
   },
 }
 
-/* export const App = {
-  setup() {
-    return {
-      msg: 'world'
-    }
-  },
-  render() {
-    window.self = this
-    // ui
-    return h(
-      "div",
-      {
-        id: "root",
-        class: "red",
-      },
-      `hello ${this.msg}`,
-    );
-  },
-} */
 export const App = {
   setup() {
     return {
@@ -45,8 +26,9 @@ export const App = {
       {
         id: "root",
         class: "red",
+        onClick: () => console.log('click')
       },
-      h('div', null, `hello ${this.msg}`),
+      `hello ${this.msg}`,
     );
   },
-}
+} 

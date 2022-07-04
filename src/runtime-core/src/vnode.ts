@@ -21,7 +21,6 @@ function createShapeFlags(type, children) {
     if (Array.isArray(children)) res |= shapeFlags.ARRAY_CHILDREN
     if (!Array.isArray(children) && typeof (children) == 'string') res |= shapeFlags.TEXT_CHILDREN
   }
-  debugger
   return res
 }
 
