@@ -1,3 +1,4 @@
+import { isArrayChildren, isElement, isStatefulComponent, isTextChild } from "../../shared/shapeFlags"
 import { createComponentInstance, setupComponent } from "./component"
 import { createVNode } from "./vnode"
 
@@ -7,13 +8,10 @@ export function render(vnode: any, rootContainer: any) {
 
 
 export function patch(vnode: any, rootContainer: any) {
-  const type = vnode.type
-
-  if (typeof type == 'string') {
-
+  if (isElement(vnode)) {
     processElement(vnode, rootContainer)
   }
-  else if (typeof type == 'object') {
+  else if (isStatefulComponent(vnode)) {
     processComponent(vnode, rootContainer)
   }
 }
@@ -53,24 +51,20 @@ function mountElement(vnode: any, container: any) {
     }
   }
   //children
-  if (children) mountChildren(children, el)
-
+  if (children) {
+    if (isArrayChildren(vnode)) mountChildren(children, el)
+    else {
+      mountChild(children, el)
+    }
+  }
   //将当前生成好的el添加到container上
   container.append(el)
-
 }
 
 
 function mountChildren(children, el) {
-  //判断子元素是单个还是多个
-  if (Array.isArray(children)) {
-    for (let child of children) {
-      mountChild(child, el)
-    }
-  }
-  else {
-    //判断是单个
-    mountChild(children, el)
+  for (let child of children) {
+    mountChild(child, el)
   }
 }
 

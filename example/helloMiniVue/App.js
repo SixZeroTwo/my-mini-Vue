@@ -12,7 +12,7 @@ const Foo = {
   },
 }
 
-export const App = {
+/* export const App = {
   setup() {
     return {
       msg: 'world'
@@ -28,6 +28,25 @@ export const App = {
         class: "red",
       },
       `hello ${this.msg}`,
+    );
+  },
+} */
+export const App = {
+  setup() {
+    return {
+      msg: 'world'
+    }
+  },
+  render() {
+    window.self = this
+    // ui
+    return h(
+      "div",
+      {
+        id: "root",
+        class: "red",
+      },
+      h('div', null, `hello ${this.msg}`),
     );
   },
 }
