@@ -1,4 +1,5 @@
-import { readonly, shallowReadonly } from "../../reactivity/reactive"
+import { shallowReadonly } from "../../reactivity/reactive"
+import { emit } from "./componentEmit"
 import { initProps } from "./componentProps"
 import { publicInstanceProxyHandlers } from "./componentPublicInstanceProxyHandlers"
 import { patch } from "./renderer"
@@ -29,7 +30,9 @@ function setupStatefulComponent(instance: any) {
   const setup = instance.type.setup
   if (setup) {
     const props = instance.props
-    const setupResult = setup(readonly(props))
+
+    const context = { 'emit': emit.bind(null, instance) }
+    const setupResult = setup(shallowReadonly(props), context)
     //处理结果，将结果挂载到instance上
     handleSetupResult(instance, setupResult)
   }

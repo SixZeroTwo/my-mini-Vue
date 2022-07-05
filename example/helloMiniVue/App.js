@@ -3,12 +3,15 @@ import { Foo } from './Foo.js'
 
 export const App = {
   setup() {
+    const testFn = (testStr) => { console.log(testStr); }
+    const testAddFn = (fn) => fn()
     return {
-      msg: 'world'
+      msg: 'world',
+      testFn,
+      testAddFn
     }
   },
   render() {
-    window.self = this
     // ui
     return h(
       "div",
@@ -16,7 +19,7 @@ export const App = {
         id: "root",
         class: "red",
       },
-      h(Foo, { count: 1 })
+      h(Foo, { count: 1, onTest: this.testFn, onTestAdd: this.testAddFn })
     );
   },
 } 
