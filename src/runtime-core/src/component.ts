@@ -58,7 +58,7 @@ function setupProxy(instance) {
 function setupRenderEffect(instance: any, container, vnode) {
   //子vnode数组
   const subTree = instance.render.call(instance.proxy)
-  debugger
+
   patch(subTree, container)
   instance.el = subTree.el
 }
