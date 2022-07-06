@@ -2,6 +2,7 @@ import { shallowReadonly } from "../../reactivity/reactive"
 import { emit } from "./componentEmit"
 import { initProps } from "./componentProps"
 import { publicInstanceProxyHandlers } from "./componentPublicInstanceProxyHandlers"
+import { initSlots } from "./componentSlots"
 import { patch } from "./renderer"
 
 export function createComponentInstance(vnode: any) {
@@ -15,6 +16,7 @@ export function setupComponent(instance: any, container, vnode) {
   //Todo
   //初始化props、slots
   initProps(instance, vnode)
+  initSlots(instance, vnode)
   //初始化具有状态的的component（区别于无状态的函数式组件）
   setupStatefulComponent(instance)
   //将proxy代理对象挂在到instance上
@@ -23,9 +25,7 @@ export function setupComponent(instance: any, container, vnode) {
   setupRenderEffect(instance, container, vnode)
 }
 
-function setupProxy(instance) {
-  instance.proxy = new Proxy({ _: instance }, publicInstanceProxyHandlers)
-}
+
 function setupStatefulComponent(instance: any) {
   const setup = instance.type.setup
   if (setup) {
@@ -52,9 +52,13 @@ function finishSetupComponent(instance: any) {
     instance.render = render
   }
 }
+function setupProxy(instance) {
+  instance.proxy = new Proxy({ _: instance }, publicInstanceProxyHandlers)
+}
 function setupRenderEffect(instance: any, container, vnode) {
   //子vnode数组
   const subTree = instance.render.call(instance.proxy)
+  debugger
   patch(subTree, container)
   instance.el = subTree.el
 }
