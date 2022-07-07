@@ -27,8 +27,10 @@ export function setupComponent(instance: any, container, vnode) {
 
 
 function setupStatefulComponent(instance: any) {
+  setCurrentInstance(instance)
   const setup = instance.type.setup
   if (setup) {
+
     const props = instance.props
 
     const context = { 'emit': emit.bind(null, instance) }
@@ -38,6 +40,7 @@ function setupStatefulComponent(instance: any) {
   }
   //结束初始化阶段，将component上的render挂载到instance上    
   finishSetupComponent(instance)
+  setCurrentInstance(null)
 }
 
 function handleSetupResult(instance: any, setupResult: any) {
@@ -63,4 +66,12 @@ function setupRenderEffect(instance: any, container, vnode) {
   instance.el = subTree.el
 }
 
+let currentInstance = null
 
+export function getCurrentInstance() {
+  debugger
+  return currentInstance
+}
+function setCurrentInstance(val) {
+  currentInstance = val
+}
