@@ -1,18 +1,44 @@
 import { isArrayChildren, isElement, isStatefulComponent, isTextChild } from "../../shared/shapeFlags"
 import { createComponentInstance, setupComponent } from "./component"
 
+export const Fragment = Symbol('Fragment')
+export const TextNode = Symbol('TextNode')
+
 export function render(vnode: any, rootContainer: any) {
   patch(vnode, rootContainer)
 }
 
 
 export function patch(vnode: any, rootContainer: any) {
-  if (isElement(vnode)) {
-    processElement(vnode, rootContainer)
+  const { type } = vnode
+  switch (type) {
+    case Fragment: processFragment(vnode, rootContainer); break
+    case TextNode: processText(vnode, rootContainer); break
+    default: {
+      if (isElement(vnode)) {
+        processElement(vnode, rootContainer)
+      }
+      else if (isStatefulComponent(vnode)) {
+        processComponent(vnode, rootContainer)
+      }
+    }
   }
-  else if (isStatefulComponent(vnode)) {
-    processComponent(vnode, rootContainer)
+}
+
+
+function processFragment(vnode, container) {
+  //只需要渲染Fragment的children即可
+  const { children } = vnode
+  if (Array.isArray(children)) {
+    mountChildren(children, container)
   }
+  else patch(children, container)
+}
+
+function processText(vnode: any, rootContainer: any) {
+  const { children } = vnode
+  const el = vnode.el = document.createTextNode(children)
+  rootContainer.append(el)
 }
 
 function processComponent(vnode, container) {
@@ -72,4 +98,5 @@ function mountChildren(children, el) {
     patch(child, el)
   }
 }
+
 

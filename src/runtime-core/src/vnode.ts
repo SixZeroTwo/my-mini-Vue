@@ -1,4 +1,5 @@
 import { shapeFlags } from "../../shared/shapeFlags"
+import { TextNode } from "./renderer"
 
 export function createVNode(type, props?, children?) {
   return {
@@ -24,3 +25,6 @@ function createShapeFlags(type, children) {
   return res
 }
 
+export function createTextVNode(text) {
+  return createVNode(TextNode, {}, text)
+}
