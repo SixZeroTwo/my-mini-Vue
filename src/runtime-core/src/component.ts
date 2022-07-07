@@ -5,10 +5,12 @@ import { publicInstanceProxyHandlers } from "./componentPublicInstanceProxyHandl
 import { initSlots } from "./componentSlots"
 import { patch } from "./renderer"
 
-export function createComponentInstance(vnode: any) {
+export function createComponentInstance(vnode: any, parent) {
   return {
     vnode,
     type: vnode.type,
+    provides: parent ? parent.provides : {},
+    parent,
   }
 }
 
@@ -27,20 +29,20 @@ export function setupComponent(instance: any, container, vnode) {
 
 
 function setupStatefulComponent(instance: any) {
-  setCurrentInstance(instance)
+
   const setup = instance.type.setup
   if (setup) {
-
     const props = instance.props
-
     const context = { 'emit': emit.bind(null, instance) }
+    setCurrentInstance(instance)
     const setupResult = setup(shallowReadonly(props), context)
+    setCurrentInstance(null)
     //处理结果，将结果挂载到instance上
     handleSetupResult(instance, setupResult)
   }
   //结束初始化阶段，将component上的render挂载到instance上    
   finishSetupComponent(instance)
-  setCurrentInstance(null)
+
 }
 
 function handleSetupResult(instance: any, setupResult: any) {
@@ -61,15 +63,14 @@ function setupProxy(instance) {
 function setupRenderEffect(instance: any, container, vnode) {
   //子vnode数组
   const subTree = instance.render.call(instance.proxy)
-
-  patch(subTree, container)
+  //记录parent
+  patch(subTree, container, instance)
   instance.el = subTree.el
 }
 
 let currentInstance = null
 
 export function getCurrentInstance() {
-  debugger
   return currentInstance
 }
 function setCurrentInstance(val) {

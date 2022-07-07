@@ -5,34 +5,34 @@ export const Fragment = Symbol('Fragment')
 export const TextNode = Symbol('TextNode')
 
 export function render(vnode: any, rootContainer: any) {
-  patch(vnode, rootContainer)
+  patch(vnode, rootContainer, null)
 }
 
 
-export function patch(vnode: any, rootContainer: any) {
+export function patch(vnode: any, rootContainer: any, parentComponent) {
   const { type } = vnode
   switch (type) {
-    case Fragment: processFragment(vnode, rootContainer); break
+    case Fragment: processFragment(vnode, rootContainer, parentComponent); break
     case TextNode: processText(vnode, rootContainer); break
     default: {
       if (isElement(vnode)) {
-        processElement(vnode, rootContainer)
+        processElement(vnode, rootContainer, parentComponent)
       }
       else if (isStatefulComponent(vnode)) {
-        processComponent(vnode, rootContainer)
+        processComponent(vnode, rootContainer, parentComponent)
       }
     }
   }
 }
 
 
-function processFragment(vnode, container) {
+function processFragment(vnode, container, parentComponent) {
   //只需要渲染Fragment的children即可
   const { children } = vnode
   if (Array.isArray(children)) {
-    mountChildren(children, container)
+    mountChildren(children, container, parentComponent)
   }
-  else patch(children, container)
+  else patch(children, container, parentComponent)
 }
 
 function processText(vnode: any, rootContainer: any) {
@@ -41,28 +41,28 @@ function processText(vnode: any, rootContainer: any) {
   rootContainer.append(el)
 }
 
-function processComponent(vnode, container) {
+function processComponent(vnode, container, parentComponent) {
 
   //如果是第一次挂载阶段
-  mountComponent(vnode, container)
+  mountComponent(vnode, container, parentComponent)
 }
 
-function mountComponent(vnode, container) {
+function mountComponent(vnode, container, parentComponent) {
   //将数据收集之后放在实例上统一处理
-  const instance = createComponentInstance(vnode)
+  const instance = createComponentInstance(vnode, parentComponent)
   //初始化Component
   setupComponent(instance, container, vnode)
 }
 
-function processElement(vnode: any, container: any) {
+function processElement(vnode: any, container: any, parentComponent) {
 
   // 如果是第一次挂载
-  mountElement(vnode, container)
+  mountElement(vnode, container, parentComponent)
   // TODO
   // update
 }
 
-function mountElement(vnode: any, container: any) {
+function mountElement(vnode: any, container: any, parentComponent) {
   //解构
   const { type, props, children } = vnode
   //创建元素、配置元素、递归调用patch，添加到容器
@@ -82,10 +82,10 @@ function mountElement(vnode: any, container: any) {
   }
   //children
   if (children) {
-    if (isArrayChildren(vnode)) mountChildren(children, el)
+    if (isArrayChildren(vnode)) mountChildren(children, el, parentComponent)
     else if (isTextChild(vnode)) el.textContent = children
     else {
-      patch(children, el)
+      patch(children, el, parentComponent)
     }
   }
   //将当前生成好的el添加到container上
@@ -93,9 +93,9 @@ function mountElement(vnode: any, container: any) {
 }
 
 
-function mountChildren(children, el) {
+function mountChildren(children, el, parentComponent) {
   for (let child of children) {
-    patch(child, el)
+    patch(child, el, parentComponent)
   }
 }
 
