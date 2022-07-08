@@ -1,4 +1,4 @@
-import { shapeFlags } from "../../shared/shapeFlags"
+import { shapeFlags } from "../shared/shapeFlags"
 import { TextNode } from "./renderer"
 
 export function createVNode(type, props?, children?) {

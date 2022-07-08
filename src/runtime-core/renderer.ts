@@ -1,4 +1,4 @@
-import { isArrayChildren, isElement, isStatefulComponent, isTextChild } from "../../shared/shapeFlags"
+import { isArrayChildren, isElement, isStatefulComponent, isTextChild } from "../shared/shapeFlags"
 import { createComponentInstance, setupComponent } from "./component"
 
 export const Fragment = Symbol('Fragment')
