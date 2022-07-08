@@ -3,7 +3,6 @@ import { emit } from "./componentEmit"
 import { initProps } from "./componentProps"
 import { publicInstanceProxyHandlers } from "./componentPublicInstanceProxyHandlers"
 import { initSlots } from "./componentSlots"
-import { patch } from "./renderer"
 
 export function createComponentInstance(vnode: any, parent) {
   return {
@@ -23,8 +22,6 @@ export function setupComponent(instance: any, container, vnode) {
   setupStatefulComponent(instance)
   //将proxy代理对象挂在到instance上
   setupProxy(instance)
-  //对子节点做挂载操作
-  setupRenderEffect(instance, container, vnode)
 }
 
 
@@ -60,13 +57,7 @@ function finishSetupComponent(instance: any) {
 function setupProxy(instance) {
   instance.proxy = new Proxy({ _: instance }, publicInstanceProxyHandlers)
 }
-function setupRenderEffect(instance: any, container, vnode) {
-  //子vnode数组
-  const subTree = instance.render.call(instance.proxy)
-  //记录parent
-  patch(subTree, container, instance)
-  instance.el = subTree.el
-}
+
 
 let currentInstance = null
 

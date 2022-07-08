@@ -11,6 +11,8 @@
   <div id="app"></div>
   <script type="module">
     import { createApp } from "../../lib/mini-vue.esm.js";
+    console.log(createApp);
+    window.createApp = createApp
     import App from "./App.js";
 
     const rootContainer = document.querySelector("#app");
