@@ -92,9 +92,6 @@ export function createRenderer({ createElement, patchProp, insert }) {
     if (children) {
       if (isArrayChildren(vnode)) mountChildren(children, el, parentComponent)
       else if (isTextChild(vnode)) el.textContent = children
-      else {
-        patch(null, children, el, parentComponent)
-      }
     }
     //将当前生成好的el添加到container上
     insert(el, container)
