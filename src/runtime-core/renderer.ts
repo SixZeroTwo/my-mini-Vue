@@ -74,7 +74,6 @@ export function createRenderer({ createElement, patchProp, insert }) {
       // update
       patchElement(n1, n2, container)
     }
-
   }
   function mountElement(vnode: any, container: any, parentComponent) {
     //解构
@@ -107,10 +106,31 @@ export function createRenderer({ createElement, patchProp, insert }) {
     }
   }
   function patchElement(n1, n2, container) {
-    console.log('update element');
-
+    console.log("patchElement");
+    console.log("n1", n1);
+    console.log("n2", n2);
+    const oldProps = n1.props || {}
+    const newProps = n2.props || {}
+    //给新节点设置el
+    const el = (n2.el = n1.el)
+    patchProps(oldProps, newProps, el)
   }
 
+  function patchProps(oldProps, newProps, el) {
+    //属性的值发生改变或新增了属性
+    for (let key in newProps) {
+      if (oldProps[key] != newProps[key]) {
+        //调用patchProp接口，将新属性挂载
+        patchProp(el, key, newProps[key])
+      }
+    }
+    //检查旧属性是否有删除
+    for (let key in oldProps) {
+      if (!(key in newProps)) {
+        patchProp(el, key, undefined)
+      }
+    }
+  }
   function setupRenderEffect(instance: any, container, vnode) {
     effect(() => {
       if (!instance.isMounted) {

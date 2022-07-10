@@ -8,7 +8,12 @@ function patchProp(el, key, value) {
     const event = key.slice(2).toLowerCase()
     el.addEventListener(event, value)
   }
-  el.setAttribute(key, value)
+  if (value == undefined || value == null) {
+    el.removeAttribute(key)
+  }
+  else {
+    el.setAttribute(key, value)
+  }
 }
 
 function insert(el, container) {
