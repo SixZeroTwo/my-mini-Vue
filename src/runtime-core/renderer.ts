@@ -7,7 +7,7 @@ export const Fragment = Symbol('Fragment')
 export const TextNode = Symbol('TextNode')
 
 
-export function createRenderer({ createElement, patchProp, insert }) {
+export function createRenderer({ createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert, remove: hostRemove, setElementText: hostSetElementText }) {
   function render(vnode: any, rootContainer: any) {
     patch(null, vnode, rootContainer, null)
   }
@@ -72,20 +72,20 @@ export function createRenderer({ createElement, patchProp, insert }) {
     }
     else {
       // update
-      patchElement(n1, n2, container)
+      patchElement(n1, n2, container, parentComponent)
     }
   }
   function mountElement(vnode: any, container: any, parentComponent) {
     //解构
     const { type, props, children } = vnode
     //创建元素、配置元素、递归调用patch，添加到容器
-    const el = createElement(type)
+    const el = hostCreateElement(type)
     //挂到el上
     vnode.el = el
     //props
     if (props) {
       for (let key in props) {
-        patchProp(el, key, props[key])
+        hostPatchProp(el, key, props[key])
       }
     }
     //children
@@ -94,7 +94,7 @@ export function createRenderer({ createElement, patchProp, insert }) {
       else if (isTextChild(vnode)) el.textContent = children
     }
     //将当前生成好的el添加到container上
-    insert(el, container)
+    hostInsert(el, container)
   }
 
   function mountChildren(children, el, parentComponent) {
@@ -102,30 +102,60 @@ export function createRenderer({ createElement, patchProp, insert }) {
       patch(null, child, el, parentComponent)
     }
   }
-  function patchElement(n1, n2, container) {
+  function patchElement(n1, n2, container, parentComponent) {
     console.log("patchElement");
     console.log("n1", n1);
     console.log("n2", n2);
-    const oldProps = n1.props || {}
-    const newProps = n2.props || {}
+
     //给新节点设置el
     const el = (n2.el = n1.el)
-    patchProps(oldProps, newProps, el)
+    patchProps(n1, n2, el)
+    patchChildren(n1, n2, parentComponent)
   }
 
-  function patchProps(oldProps, newProps, el) {
+  function patchProps(n1, n2, el) {
+    const oldProps = n1.props || {}
+    const newProps = n2.props || {}
     //属性的值发生改变或新增了属性
     for (let key in newProps) {
       if (oldProps[key] != newProps[key]) {
         //调用patchProp接口，将新属性挂载
-        patchProp(el, key, newProps[key])
+        hostPatchProp(el, key, newProps[key])
       }
     }
     //检查旧属性是否有删除
     for (let key in oldProps) {
       if (!(key in newProps)) {
-        patchProp(el, key, undefined)
+        hostPatchProp(el, key, undefined)
       }
+    }
+  }
+  function patchChildren(n1, n2, parentComponent) {
+    //Array -> Text
+    if (isArrayChildren(n1) && isTextChild(n2)) {
+      unMountChildren(n1.children)
+      const text = n2.children
+      const el = n2.el
+      hostSetElementText(el, text)
+    }
+    else if (isTextChild(n1) && isArrayChildren(n2)) {
+      const el = n2.el
+      hostSetElementText(el, '')
+      mountChildren(n2.children, el, parentComponent)
+    }
+    else if (isTextChild(n1) && isTextChild(n2)) {
+      const text = n2.children
+      const el = n2.el
+      hostSetElementText(el, text)
+    }
+    else if (isArrayChildren(n1) && isArrayChildren(n2)) {
+      //TODO
+    }
+  }
+  function unMountChildren(children) {
+    for (let child of children) {
+      const el = child.el
+      hostRemove(child, el)
     }
   }
   function setupRenderEffect(instance: any, container, vnode) {
@@ -152,3 +182,5 @@ export function createRenderer({ createElement, patchProp, insert }) {
     createApp: createAppApi(render)
   }
 }
+
+
