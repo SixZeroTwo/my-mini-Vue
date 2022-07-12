@@ -213,6 +213,45 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
         e1--
       }
     }
+    //第三种情况，新旧序列都有公共部分，可能会有三种操作——删除、新增、移动
+    else {
+      //首先对非公共部分根据key属性来做缓存
+      const s1 = i
+      const s2 = i
+      const KeyToNewIndexMap = new Map
+      for (let i = s2; i <= e2; i++) {
+        if (c2[i].key) {
+          KeyToNewIndexMap.set(c2[i].key, i)
+        }
+      }
+
+      //旧序列中的key是否在map中有对应的index
+      for (let i = s1; i <= e1; i++) {
+        const prevChild = c1[i]
+        let newIndex
+        if (prevChild.key != null) {
+          newIndex = KeyToNewIndexMap.get(prevChild.key)
+        } else {
+          //如果没有key就只能一个个比对
+          for (let j = s2; j <= e2; j++) {
+            const newChild = c2[j]
+            if (isSameVnode(prevChild, newChild)) {
+
+              newIndex = j
+              break
+            }
+          }
+        }
+        //newIndex在新序列中没有，删除即可
+        if (newIndex == undefined) {
+          hostRemove(prevChild.el)
+        } else {
+          //否则继续递归比对
+          console.log(c2[newIndex]);
+          patch(prevChild, c2[newIndex], container, parentComponent, null)
+        }
+      }
+    }
   }
 
   function isSameVnode(c1: any, c2: any) {
