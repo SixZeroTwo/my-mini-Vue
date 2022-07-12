@@ -218,6 +218,8 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
       //首先对非公共部分根据key属性来做缓存
       const s1 = i
       const s2 = i
+      const toBePatched = e2 - s2
+      let patched = 0
       const KeyToNewIndexMap = new Map
       for (let i = s2; i <= e2; i++) {
         if (c2[i].key) {
@@ -229,6 +231,10 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
       for (let i = s1; i <= e1; i++) {
         const prevChild = c1[i]
         let newIndex
+        if (patched >= toBePatched) {
+          hostRemove(prevChild.el)
+          continue
+        }
         if (prevChild.key != null) {
           newIndex = KeyToNewIndexMap.get(prevChild.key)
         } else {
@@ -249,6 +255,7 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
           //否则继续递归比对
           console.log(c2[newIndex]);
           patch(prevChild, c2[newIndex], container, parentComponent, null)
+          patched++
         }
       }
     }
