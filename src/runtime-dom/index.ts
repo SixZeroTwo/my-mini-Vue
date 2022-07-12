@@ -16,13 +16,14 @@ function patchProp(el, key, value) {
   }
 }
 
-function insert(el, container) {
-  container.append(el)
+function insert(el, container, anchor) {
+  container.insertBefore(el, anchor)
 }
-function remove(child, el) {
-  const parent = el.parent
+function remove(childEl) {
+
+  const parent = childEl.parentNode
   if (parent) {
-    parent.removeChild(child)
+    parent.removeChild(childEl)
   }
 }
 function setElementText(el, text: string) {
