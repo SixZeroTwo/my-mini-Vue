@@ -13,5 +13,8 @@ export const publicInstanceProxyHandlers = {
     if (key == '$slots') {
       return instance.slots
     }
+    if (key == '$props') {
+      return instance.props
+    }
   },
 }

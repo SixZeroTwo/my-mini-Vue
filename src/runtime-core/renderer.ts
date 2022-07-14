@@ -52,19 +52,42 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
     }
     else {
       //更新
-
+      updateComponent(n1, n2)
     }
   }
 
   function mountComponent(vnode, container, parentComponent, anchor) {
     //将数据收集之后放在实例上统一处理
     const instance = createComponentInstance(vnode, parentComponent)
+    //在vnode上记录component
+    vnode.component = instance
     //初始化Component
     setupComponent(instance, container, vnode)
     //对子节点做挂载操作
     setupRenderEffect(instance, container, vnode, anchor)
   }
-
+  function updateComponent(n1, n2) {
+    //给n2也赋值component实例和el
+    n2.el = n1.el
+    const instance = (n2.component = n1.component)
+    if (shouldUpdateComponent(n1, n2)) {
+      instance.next = n2
+      instance.update()
+    }
+    else {
+      instance.vnode = n2
+    }
+  }
+  function shouldUpdateComponent(n1, n2) {
+    const { props: prevProps } = n1;
+    const { props: nextProps } = n2;
+    if (Object.keys(prevProps).length != Object.keys(nextProps).length) return true
+    for (const key in nextProps) {
+      if (nextProps[key] !== prevProps[key]) {
+        return true;
+      }
+    }
+  }
   function processElement(n1, n2: any, container: any, parentComponent, anchor) {
     if (!n1) {
       // 如果是第一次挂载
@@ -283,7 +306,7 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
     return c1.type == c2.type && c1.key == c2.key
   }
   function setupRenderEffect(instance: any, container, vnode, anchor) {
-    effect(() => {
+    instance.update = effect(() => {
       if (!instance.isMounted) {
         //子vnode数组
         const subTree = (instance.subTree = instance.render.call(instance.proxy))
@@ -293,6 +316,11 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
         instance.isMounted = true
       }
       else {
+        //render之前更新instance
+        const { next } = instance
+        if (next) {
+          updateComponentPreRender(instance)
+        }
         //子vnode数组
         const subTree = instance.render.call(instance.proxy)
         const prevSubTree = instance.subTree
@@ -301,6 +329,11 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
         patch(prevSubTree, subTree, container, instance, anchor)
       }
     })
+  }
+  function updateComponentPreRender(instance) {
+    instance.vnode = instance.next
+    instance.next = null
+    instance.props = instance.vnode.props
   }
   return {
     createApp: createAppApi(render)

@@ -12,7 +12,8 @@ export function createComponentInstance(vnode: any, parent) {
     provides: parent ? parent.provides : {},
     parent,
     isMounted: false,
-    subTree: {}
+    subTree: {},
+    next: null,
   }
 }
 
@@ -35,7 +36,7 @@ function setupStatefulComponent(instance: any) {
     const props = instance.props
     const context = { 'emit': emit.bind(null, instance) }
     setCurrentInstance(instance)
-    const setupResult = proxyRefs(setup(shallowReadonly(props), context))
+    const setupResult = proxyRefs(setup(shallowReadonly(props), context) || {})
     setCurrentInstance(null)
     //处理结果，将结果挂载到instance上
     handleSetupResult(instance, setupResult)

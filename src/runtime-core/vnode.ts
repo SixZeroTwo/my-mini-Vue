@@ -11,6 +11,7 @@ export function createVNode(type, props?, children?) {
     parent,
     key: props ? props.key : null,
     __v_isVNode: true,
+    component: null,
   }
 }
 
