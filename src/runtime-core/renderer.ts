@@ -2,6 +2,7 @@ import { effect } from "../reactivity/effect"
 import { isArrayChildren, isElement, isStatefulComponent, isTextChild } from "../shared/shapeFlags"
 import { createComponentInstance, setupComponent } from "./component"
 import { createAppApi } from "./createApp"
+import { queueJobs } from "./scheduler"
 
 export const Fragment = Symbol('Fragment')
 export const TextNode = Symbol('TextNode')
@@ -328,8 +329,13 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
         //记录parent
         patch(prevSubTree, subTree, container, instance, anchor)
       }
+    }, {
+      scheduler() {
+        queueJobs(instance)
+      }
     })
   }
+
   function updateComponentPreRender(instance) {
     instance.vnode = instance.next
     instance.next = null
