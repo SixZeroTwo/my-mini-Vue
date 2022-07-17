@@ -82,8 +82,7 @@ function parseTag(context, tagType) {
   const match: any = /^<\/?([a-z]+)>/i.exec(context.source)
   const tag = match[1]
   const content = match[0]
-  if (tagType == TagType.START) advanceBy(context, content.length)
-  else if (tagType == TagType.END) advanceBy(context, -content.length)
+  advanceBy(context, content.length)
   return tag
 }
 
@@ -95,6 +94,7 @@ function parseText(context: any): any {
     index == -1 ? index = Infinity : index
     endIndex = Math.min(index, endIndex)
   }
+  endIndex == Infinity ? context.source.length : endIndex
   const content = context.source.slice(0, endIndex)
   advanceBy(context, endIndex)
   return {

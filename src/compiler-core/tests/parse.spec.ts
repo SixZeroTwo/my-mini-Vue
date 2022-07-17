@@ -20,6 +20,7 @@ describe('parse', () => {
       expect(ast.children[0]).toStrictEqual({
         type: NodeType.ELEMENT,
         tag: 'div',
+        children: [],
       })
     });
   });
