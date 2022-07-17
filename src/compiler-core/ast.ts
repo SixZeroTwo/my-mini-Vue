@@ -2,4 +2,5 @@ export enum NodeType {
   INTERPLOTATION,
   SIMPLE_EXPRESSION,
   ELEMENT,
+  TEXT,
 }

@@ -30,6 +30,9 @@ function parseChildren(context) {
   else if (/^<[a-z]+>/i.test(context.source)) {
     node = parseElement(context)
   }
+  else {
+    node = parseText(context)
+  }
   nodes.push(node)
   return nodes
 }
@@ -78,4 +81,14 @@ function parseTag(context, tagType) {
   if (tagType == TagType.START) advanceBy(context, content.length)
   else if (tagType == TagType.END) advanceBy(context, -content.length)
   return tag
+}
+
+function parseText(context: any): any {
+  const endIndex = context.source.length
+  const content = context.source.slice(0, endIndex)
+  advanceBy(context, endIndex)
+  return {
+    type: NodeType.TEXT,
+    content,
+  }
 }
