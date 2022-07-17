@@ -33,4 +33,27 @@ describe('parse', () => {
       })
     });
   });
+
+  describe('joined case', () => {
+    test('case of three types joined', () => {
+      const ast = baseParse(`<div>hello{{ message }}</div>`)
+      expect(ast.children[0]).toStrictEqual({
+        type: NodeType.ELEMENT,
+        tag: 'div',
+        children: [
+          {
+            type: NodeType.TEXT,
+            content: 'hello',
+          },
+          {
+            type: NodeType.INTERPLOTATION,
+            content: {
+              type: NodeType.SIMPLE_EXPRESSION,
+              content: 'message',
+            }
+          }
+        ]
+      })
+    });
+  });
 });
