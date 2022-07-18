@@ -56,5 +56,43 @@ describe('parse', () => {
         ]
       })
     });
+
+    test('case 2 of three types joined', () => {
+      const ast = baseParse(`<div><p>hello</p>{{ message }}</div>`)
+      expect(ast.children[0]).toStrictEqual({
+        type: NodeType.ELEMENT,
+        tag: 'div',
+        children: [
+          {
+            type: NodeType.ELEMENT,
+            tag: 'p',
+            children: [
+              {
+                type: NodeType.TEXT,
+                content: 'hello',
+              },
+            ]
+          },
+          {
+            type: NodeType.INTERPLOTATION,
+            content: {
+              type: NodeType.SIMPLE_EXPRESSION,
+              content: 'message',
+            }
+          }
+        ]
+      })
+    });
+    test('case 1 of wrong use of tags', () => {
+      expect(() => {
+        baseParse('<div><span></div>')
+      }).toThrowError('缺少结束标签</span>')
+    });
+
+    test('case 2 of wrong use of tags', () => {
+      expect(() => {
+        baseParse('<div></span></div>')
+      }).toThrowError('缺少开始标签<span>')
+    });
   });
 });

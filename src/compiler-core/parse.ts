@@ -6,7 +6,7 @@ const enum TagType {
 
 export function baseParse(content) {
   const context = createParseContext(content)
-  return createRoot(parseChildren(context, ''))
+  return createRoot(parseChildren(context, []))
 }
 
 function createParseContext(content) {
@@ -20,16 +20,16 @@ function createRoot(children) {
   }
 }
 
-function parseChildren(context, parentTag) {
+function parseChildren(context, ancestors) {
   let nodes: any = []
   let node
-  while (!isEnd(context, parentTag)) {
+  while (!isEnd(context, ancestors)) {
     if (context.source.startsWith('{{')) {
       node = parseInterplotation(context)
 
     }
     else if (/^<[a-z]+>/i.test(context.source)) {
-      node = parseElement(context)
+      node = parseElement(context, ancestors)
     }
     else {
       node = parseText(context)
@@ -63,12 +63,18 @@ function advanceBy(context, length) {
   context.source = context.source.slice(length)
 }
 
-function parseElement(context) {
+function parseElement(context, ancestors) {
   //取出tag，并将头和尾去掉
   //去头
   const tag = parseTag(context, TagType.START)
+  ancestors.push(tag)
   //得到children
-  const children = parseChildren(context, tag)
+  const children = parseChildren(context, ancestors)
+  //去尾之前判断尾部标签是否与pop出来的标签一致
+  const popTag = ancestors.pop()
+  if (!startsWithEndTag(context.source, popTag)) {
+    throw new Error(`缺少结束标签</${popTag}>`)
+  }
   //去尾
   parseTag(context, TagType.END)
   return {
@@ -87,7 +93,7 @@ function parseTag(context, tagType) {
 }
 
 function parseText(context: any): any {
-  const symbols = ['{{', '</']
+  const symbols = ['{{', '</', '<']
   let endIndex = Infinity
   for (let sym of symbols) {
     let index = context.source.indexOf(sym)
@@ -103,8 +109,22 @@ function parseText(context: any): any {
   }
 }
 
-function isEnd(context, parentTag) {
+function isEnd(context, ancestors: any[]) {
   //当字符串空了或遇到parentTag时可以返回true
   const s = context.source
-  return s == '' || s == `</${parentTag}>`
+  if (s.startsWith('</')) {
+    for (let i = ancestors.length - 1; i >= 0; i--) {
+      let parentTag = ancestors[i]
+      if (startsWithEndTag(s, parentTag)) return true
+    }
+    //结束标签开头的情况下没有匹配的开始标签
+    const curEndTagArray: any = /^<\/([a-z]+)>/i.exec(s)
+    const curEndTag = curEndTagArray[1]
+    throw new Error(`缺少开始标签<${curEndTag}>`)
+  }
+  return s == ''
+}
+
+function startsWithEndTag(s, parentTag) {
+  return s.slice(0, parentTag.length + 3) == `</${parentTag}>`
 }
