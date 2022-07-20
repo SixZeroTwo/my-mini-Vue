@@ -1,10 +1,10 @@
 import { NodeType } from "./ast"
-import { TO_DISPLAY_STRING } from "./runtimeHelpers"
+import { CREATE_ELEMENT_BLOCK, TO_DISPLAY_STRING } from "./runtimeHelpers"
 
 export function transform(ast, options?) {
   const context = createTransformContext(ast, options ? options : {})
-  createCodegenNode(ast)
   traverseNodes(context.root, context)
+  createCodegenNode(ast)
   ast.helpers = Array.from(context.helpers.keys())
 }
 
@@ -33,17 +33,26 @@ function traverseNodes(node, context) {
       nodeTransform(node)
     }
   }
-  switch (node.type) {
-    case NodeType.INTERPLOTATION:
-      context.setHelpers([TO_DISPLAY_STRING])
-      break
-  }
+
+  setHelpersByType(node, context)
+
   traverseChildren(node, context)
 }
 
 function traverseChildren(node, context) {
   if (node.children) {
     for (let child of node.children) traverseNodes(child, context)
+  }
+}
+
+function setHelpersByType(node, context) {
+  switch (node.type) {
+    case NodeType.INTERPLOTATION:
+      context.setHelpers(TO_DISPLAY_STRING)
+      break
+    case NodeType.ELEMENT:
+      context.setHelpers(CREATE_ELEMENT_BLOCK)
+      break
   }
 }
 

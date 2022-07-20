@@ -1,5 +1,5 @@
 import { NodeType } from "./ast"
-import { TO_DISPLAY_STRING } from "./runtimeHelpers"
+import { CREATE_ELEMENT_BLOCK, TO_DISPLAY_STRING } from "./runtimeHelpers"
 
 export function generate(ast) {
   const context = createCodegenContext()
@@ -26,6 +26,9 @@ function createCodegenContext() {
     push: (s: string) => {
       context.code += s
     },
+    helper(str) {
+      return `_${str}`
+    }
   }
   return context
 }
@@ -51,19 +54,19 @@ function genNode(node, context) {
     case NodeType.SIMPLE_EXPRESSION:
       genExpression(node, context)
       break
+    case NodeType.ELEMENT:
+      genElement(node, context)
+      break
   }
-
-
 }
 
 function genText(node, context) {
   const { push } = context
-  push(node.content)
+  push(`"${node.content}"`)
 }
 
 function genInterplotation(node, context) {
-  const { push } = context
-  const helper = str => `_${str}`
+  const { push, helper } = context
   push(`${helper(TO_DISPLAY_STRING)}(`)
   genNode(node.content, context)
   push(`)`)
@@ -74,3 +77,9 @@ function genExpression(node, context) {
   push(node.content)
 }
 
+function genElement(node, context) {
+  const { push, helper } = context
+  push(`${helper(CREATE_ELEMENT_BLOCK)}(`)
+  push(`"${node.tag}"`)
+  push(`)`)
+}
