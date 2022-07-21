@@ -57,6 +57,9 @@ function genNode(node, context) {
     case NodeType.ELEMENT:
       genElement(node, context)
       break
+    case NodeType.COMPOUND:
+      genCompound(node, context)
+      break
   }
 }
 
@@ -79,7 +82,41 @@ function genExpression(node, context) {
 
 function genElement(node, context) {
   const { push, helper } = context
+  const { props, children } = node
   push(`${helper(CREATE_ELEMENT_BLOCK)}(`)
   push(`"${node.tag}"`)
+  if (children.length) {
+    genElementProps(props, context)
+    genNodeList(children, context)
+  }
   push(`)`)
 }
+
+function genNodeList(nodes, context) {
+  const { push } = context
+  if (nodes.length > 1) {
+    push('[')
+    for (let i = 0; i < nodes.length; i++) {
+      const child = nodes[i]
+      genNode(child, context)
+    }
+    push(']')
+  } else {
+    genNode(nodes[0], context)
+  }
+}
+
+function genElementProps(props, context) {
+  const { push } = context
+  push(`,${props || null},`)
+}
+
+function genCompound(node, context) {
+  const { children } = node
+  const { push } = context
+  for (let i = 0; i < children.length; i++) {
+    genNode(children[i], context)
+    if (i < children.length - 1) push('+')
+  }
+}
+

@@ -2,6 +2,7 @@ import { generate } from "../codegen";
 import { baseParse } from "../parse";
 import { transform, } from "../transform";
 import { transformExpression } from "../transforms/transformExpression";
+import { transformText } from "../transforms/transformText";
 
 describe('generate code', () => {
   test('text ast generate  code', () => {
@@ -21,6 +22,13 @@ describe('generate code', () => {
   test('element ast generate code', () => {
     const ast = baseParse('<div></div>')
     transform(ast, { nodeTransforms: [] })
+    const { code } = generate(ast)
+    expect(code).toMatchSnapshot()
+  });
+
+  test('three types to generate code', () => {
+    const ast = baseParse('<div>hi,{{message}}</div>')
+    transform(ast, { nodeTransforms: [transformText] })
     const { code } = generate(ast)
     expect(code).toMatchSnapshot()
   });

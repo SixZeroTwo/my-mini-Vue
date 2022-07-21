@@ -80,7 +80,8 @@ function parseElement(context, ancestors) {
   return {
     type: NodeType.ELEMENT,
     tag,
-    children
+    children,
+
   }
 }
 
