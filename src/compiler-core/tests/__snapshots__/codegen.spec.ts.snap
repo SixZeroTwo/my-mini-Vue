@@ -14,5 +14,5 @@ exports[`generate code text ast generate  code 1`] = `"return function render (_
 
 exports[`generate code three types to generate code 1`] = `
 "const { createElementBlock: _createElementBlock,toDisplayString: _toDisplayString } = Vue
-return function render (_ctx,_cache,$props,$setup,$data,$options){ return _createElementBlock(\\"div\\",null,\\"hi,\\"+_toDisplayString(message)) }"
+return function render (_ctx,_cache,$props,$setup,$data,$options){ return _createElementBlock(\\"div\\",null,\\"hi,\\"+_toDisplayString(_ctx.message)) }"
 `;

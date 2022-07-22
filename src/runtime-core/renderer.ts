@@ -310,7 +310,7 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
     instance.update = effect(() => {
       if (!instance.isMounted) {
         //子vnode数组
-        const subTree = (instance.subTree = instance.render.call(instance.proxy))
+        const subTree = (instance.subTree = instance.render.call(instance.proxy, instance.proxy))
         //记录parent
         patch(null, subTree, container, instance, anchor)
         vnode.el = subTree.el
@@ -323,7 +323,7 @@ export function createRenderer({ createElement: hostCreateElement, patchProp: ho
           updateComponentPreRender(instance)
         }
         //子vnode数组
-        const subTree = instance.render.call(instance.proxy)
+        const subTree = instance.render.call(instance.proxy, instance.proxy)
         const prevSubTree = instance.subTree
         instance.subTree = subTree
         //记录parent

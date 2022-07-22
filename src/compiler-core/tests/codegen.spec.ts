@@ -28,7 +28,7 @@ describe('generate code', () => {
 
   test('three types to generate code', () => {
     const ast = baseParse('<div>hi,{{message}}</div>')
-    transform(ast, { nodeTransforms: [transformText] })
+    transform(ast, { nodeTransforms: [transformExpression, transformText] })
     const { code } = generate(ast)
     expect(code).toMatchSnapshot()
   });

@@ -53,9 +53,12 @@ function handleSetupResult(instance: any, setupResult: any) {
 }
 
 function finishSetupComponent(instance: any) {
-  const render = instance.type.render
+  const { render, template } = instance.type
   if (render) {
     instance.render = render
+  }
+  else if (template) {
+    instance.render = compiler(template)
   }
 }
 function setupProxy(instance) {
@@ -70,4 +73,9 @@ export function getCurrentInstance() {
 }
 function setCurrentInstance(val) {
   currentInstance = val
+}
+
+let compiler
+export function registerRuntimeCompiler(_compiler) {
+  compiler = _compiler
 }
