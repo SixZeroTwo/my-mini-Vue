@@ -14,7 +14,7 @@ lib文件夹内有通过rollup打包好的源码文件，修改后的源码可�
 
 # 各个模块的实现功能
 
-#### runtime-core
+## runtime-core
 
 -  支持组件类型
 -  支持 element 类型
@@ -30,7 +30,7 @@ lib文件夹内有通过rollup打包好的源码文件，修改后的源码可�
 -  支持 Text 类型节点
 -  支持 $el api
 
-#### reactivity
+## reactivity
 
 目标是用自己的 reactivity 支持现有的 demo 运行
 
@@ -50,12 +50,12 @@ lib文件夹内有通过rollup打包好的源码文件，修改后的源码可�
 -  支持 shallowReadonly
 -  支持 proxyRefs
 
-### compiler-core
+## compiler-core
 
 -  解析插值
 -  解析 element
 -  解析 text
 
-### runtime-dom
+## runtime-dom
 
--  支持 custom rendere
+-  支持 custom renderer
